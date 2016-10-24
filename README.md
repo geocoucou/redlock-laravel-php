@@ -1,20 +1,13 @@
-redlock-php - Redis distributed locks in PHP
+redlock-laravel-php - Redis locks in Laravel PHP
 
-Based on [Redlock-rb](https://github.com/antirez/redlock-rb) by [Salvatore Sanfilippo](https://github.com/antirez)
-
-This library implements the Redis-based distributed lock manager algorithm [described in this blog post](http://antirez.com/news/77).
+Forked from [redlock-php](https://github.com/ronnylt/redlock-php) by [Ronny Lopez](https://github.com/ronnylt)
+(Thank you Ronny!)
 
 To create a lock manager:
 
 ```php
 
-$servers = [
-    ['127.0.0.1', 6379, 0.01],
-    ['127.0.0.1', 6389, 0.01],
-    ['127.0.0.1', 6399, 0.01],
-];
-
-$redLock = new RedLock($servers);
+$redLock = new \geocoucou\RedLock();
 
 ```
 
@@ -22,7 +15,7 @@ To acquire a lock:
 
 ```php
 
-$lock = $redLock->lock('my_resource_name', 1000);
+    $lock = $redLock->lock('my_resource_name', 1000);
 
 ```
 
@@ -57,6 +50,4 @@ delay (by default 200 milliseconds) used to acquire the lock.
 The retry delay is actually chosen at random between `$retryDelay / 2` milliseconds and
 the specified `$retryDelay` value.
 
-**Disclaimer**: As stated in the original antirez's version, this code implements an algorithm
-which is currently a proposal, it was not formally analyzed. Make sure to understand how it works
-before using it in your production environments.
+**Disclaimer**: NOT PRODUCTION READY

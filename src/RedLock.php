@@ -1,5 +1,6 @@
 <?php
 namespace geocoucou;
+
 use Illuminate\Support\Facades\Redis;
 
 class RedLock
@@ -8,7 +9,7 @@ class RedLock
     private $retryCount;
     private $clockDriftFactor = 0.01;
 
-    function __construct($retryDelay = 200, $retryCount = 3)
+    function __construct($retryDelay = 200, $retryCount = 100)
     {
         $this->retryDelay = $retryDelay;
         $this->retryCount = $retryCount;
@@ -21,27 +22,16 @@ class RedLock
 
         do {
             $isLock = false;
-            $startTime = microtime(true) * 1000;
 
-
-            if ( Redis::set($resource, $token, 'PX', $ttl, 'NX')) {
+            if ( Redis::set($resource, $token, 'EX', $ttl, 'NX')) {
                 $isLock = true;
             }
 
-            # Add 2 milliseconds to the drift to account for Redis expires
-            # precision, which is 1 millisecond, plus 1 millisecond min drift
-            # for small TTLs.
-            $drift = ($ttl * $this->clockDriftFactor) + 2;
-
-            $validityTime = $ttl - (microtime(true) * 1000 - $startTime) - $drift;
-
-            if ($isLock && $validityTime > 0) {
+            if ($isLock ) {
                 return [
-                    'validity' => $validityTime,
                     'resource' => $resource,
                     'token'    => $token,
                 ];
-
             }
 
             // Wait a random delay before to retry
@@ -65,5 +55,6 @@ class RedLock
             end
         ';
         return Redis::eval($script, 1, $lock['resource'], $lock['token'], 1);
+
     }
 }

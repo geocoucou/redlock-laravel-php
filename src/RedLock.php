@@ -1,5 +1,5 @@
 <?php
-namespace geocoucou;
+namespace geocoucou\redlockLaravel;
 
 use Illuminate\Support\Facades\Redis;
 
